@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DeliCAD Assistant – Pre-Sales & Support</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --dark:#0D1420;--panel:#131C2D;--border:#1C2B40;
+  --blue:#3C9DE0;--text:#C5D5E8;--muted:#3D5268;
+  --user-bg:#152944;--user-br:#1C3C5C;
+}
+body{
+  background:var(--dark);
+  background-image:radial-gradient(circle,#16243A 1px,transparent 1px);
+  background-size:26px 26px;
+  font-family:'Inter','Segoe UI','Helvetica Neue',sans-serif;
+  color:var(--text);min-height:100vh;
+  display:flex;flex-direction:column;
+}
+header{
+  padding:13px 20px;border-bottom:1px solid var(--border);
+  background:var(--panel);display:flex;align-items:center;gap:10px;flex-shrink:0;
+}
+.logo-icon{
+  width:30px;height:30px;border:1px solid rgba(60,157,224,.4);
+  border-radius:7px;background:var(--dark);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.logo-name{font-weight:700;font-size:14px;letter-spacing:.02em}
+.logo-tag{color:var(--muted);font-size:12px;font-family:monospace}
+.logo-right{margin-left:auto;text-align:right}
+.logo-right a{color:var(--blue);font-size:11px;font-family:monospace;text-decoration:none}
+.logo-right a:hover{text-decoration:underline}
+.online-dot{
+  display:inline-block;width:6px;height:6px;
+  border-radius:50%;background:#4CAF50;margin-right:4px;
+}
+
+.chat-wrap{
+  flex:1;max-width:740px;width:100%;margin:0 auto;
+  padding:16px 14px 0;display:flex;flex-direction:column;
+  overflow:hidden;
+}
+#messages{
+  flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;
+  padding-bottom:14px;
+}
+#messages::-webkit-scrollbar{width:4px}
+#messages::-webkit-scrollbar-track{background:transparent}
+#messages::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+.row{display:flex;gap:8px;align-items:flex-start}
+.row.user{flex-direction:row-reverse}
+.avatar{
+  width:22px;height:22px;border:1px solid rgba(60,157,224,.3);
+  border-radius:5px;background:var(--dark);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:3px;
+}
+.bubble{
+  max-width:74%;padding:9px 13px;font-size:13.5px;line-height:1.6;
+  white-space:pre-wrap;word-break:break-word;
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:10px 10px 10px 2px;
+}
+.row.user .bubble{
+  background:var(--user-bg);border-color:var(--user-br);
+  border-radius:10px 10px 2px 10px;color:#AECBE0;
+}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px;padding-left:30px}
+.chip{
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:14px;padding:4px 11px;color:#5A7A9A;
+  font-size:11.5px;cursor:pointer;font-family:inherit;
+  transition:border-color .15s,color .15s;
+}
+.chip:hover{border-color:var(--blue);color:#8BBAD8}
+
+.dots{display:flex;gap:5px;align-items:center;padding:9px 13px}
+.dot{
+  width:6px;height:6px;border-radius:50%;background:var(--blue);
+  opacity:.7;animation:db 1.2s ease-in-out infinite;
+}
+.dot:nth-child(2){animation-delay:.18s}
+.dot:nth-child(3){animation-delay:.36s}
+@keyframes db{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+
+.input-row{
+  padding:12px 0 14px;display:flex;gap:8px;align-items:center;
+  border-top:1px solid var(--border);flex-shrink:0;
+}
+#inp{
+  flex:1;background:#09111C;border:1px solid var(--border);
+  border-radius:10px;padding:11px 13px;color:var(--text);
+  font-size:13.5px;font-family:inherit;outline:none;resize:none;
+  height:44px;transition:border-color .15s;
+}
+#inp:focus{border-color:var(--blue)}
+#inp::placeholder{color:var(--muted)}
+#btn{
+  width:44px;height:44px;border-radius:10px;border:none;
+  background:var(--blue);cursor:pointer;display:flex;
+  align-items:center;justify-content:center;flex-shrink:0;
+  transition:background .15s;
+}
+#btn:disabled{background:var(--panel);border:1px solid var(--border);cursor:default}
+#btn:not(:disabled):hover{background:#5BB0E8}
+.foot{
+  text-align:center;font-size:11px;color:var(--muted);
+  padding:0 0 10px;font-family:monospace;
+}
+.foot a{color:var(--blue);text-decoration:none}
+.foot a:hover{text-decoration:underline}
+@media(max-width:500px){
+  .bubble{max-width:88%;font-size:13px}
+  .chat-wrap{padding:12px 10px 0}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-icon">
+    <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
+      <line x1="8.5" y1="1.5" x2="8.5" y2="15.5" stroke="#3C9DE0" stroke-width="1.1" opacity=".65"/>
+      <line x1="1.5" y1="8.5" x2="15.5" y2="8.5" stroke="#3C9DE0" stroke-width="1.1" opacity=".65"/>
+      <circle cx="8.5" cy="8.5" r="3.2" stroke="#3C9DE0" stroke-width="1.2" fill="none"/>
+      <circle cx="8.5" cy="8.5" r="1.1" fill="#3C9DE0" opacity=".8"/>
+    </svg>
+  </div>
+  <span class="logo-name">DeliCAD</span>
+  <span class="logo-tag">/ Assistant</span>
+  <span style="color:#1E3A5A;font-size:11px;font-family:monospace">
+    <span class="online-dot"></span>online
+  </span>
+  <div class="logo-right">
+    <a href="https://www.patreon.com/cw/deli_cad" target="_blank">patreon.com/deli_cad</a>
+  </div>
+</header>
+
+<div class="chat-wrap">
+  <div id="messages"></div>
+  <div class="input-row">
+    <textarea id="inp" placeholder="Ρώτησέ με για οποιοδήποτε tool..." rows="1"></textarea>
+    <button id="btn" disabled>
+      <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
+        <path d="M2 8.5H15M15 8.5L9.5 3M15 8.5L9.5 14"
+          stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+  <div class="foot">
+    Δεν αποθηκεύεται ιστορικό ·
+    <a href="https://patreon.com/deli_cad/shop" target="_blank">Αγορά tools</a> ·
+    <a href="mailto:andreasdelitzakis@gmail.com">andreasdelitzakis@gmail.com</a>
+  </div>
+</div>
+
+<script>
+const SYSTEM_PROMPT = `Είσαι ο DeliCAD Assistant — official pre-sales & support assistant για τα AutoLISP tools του deli_cad (patreon.com/delicad).
+
+Βοηθάς επισκέπτες να καταλάβουν ποιο tool χρειάζονται, αν είναι συμβατό με την πλατφόρμα τους, και αν αξίζει να αγοράσουν.
+
+━━━ CATALOG ━━━
+
+🏗 ΤΟΙΧΟΙ
+• EXWALL — Εξωτερικός τοίχος με συνεχή σχεδίαση, Gap/Close, auto-cap. AutoCAD Mac/Win.
+• INWALL — Εσωτερικός τοίχος που snap-άρει σε υπάρχοντες τοίχους. AutoCAD Mac/Win.
+• DCDOOR — Αυτόματη πόρτα σε τοίχο (καμπύλη + φύλλο). AutoCAD Mac/Win.
+• DCWIN — Αυτόματο παράθυρο σε τοίχο. AutoCAD Mac/Win.
+• WALL3D — 3D Smart Wall Generator με δυναμικά ανοίγματα (πόρτα/παράθυρο/gap). AutoCAD Mac/Win.
+  Bundles: Floor Plan Suite (ULTRA €17) = EXWALL+INWALL+DCDOOR+DCWIN | Wall Suite (€6.50) = EXWALL+INWALL
+
+📐 ΣΚΑΛΕΣ (STAIRCASE BUNDLE €8 — και τα 4 μαζί)
+• STPLAN — Ευθεία σκάλα: εισάγεις αριθμό βαθμίδων, βάθος, πλάτος, κατεύθυνση → σχέδιο κάτοψης.
+• STPLAN_FLEX — Flexible/L-shape σκάλα με αλλαγή κατεύθυνσης στα click.
+• STCIRC_ — Κυκλική/ελικοειδής σκάλα: εισάγεις κέντρο, r1, r2, αριθμό βαθμίδων, γωνία.
+• USTAIR — U-shape σκάλα δύο flights με gap ενδιάμεσα.
+
+🏠 ΣΤΕΓΕΣ (ROOF GENERATOR SUITE €8 — και τα 4 μαζί)
+• STEGI-2PT — Αμφικλινής (gable) στέγη: 2 σημεία ή από polyline.
+• STEGI-3R — Τριγωνική στέγη με 3 νοκάδες.
+• STEGI-MONO — Μονόκλινη (mono-pitch) στέγη.
+• TETR-2PT — Τετράκλινη (hip roof): 2 σημεία ή από polyline.
+  Όλες: αυτόματα layers STEGI-GEISA/NOKAS/KERAMIDI, dimensions, compatible Mac/Win.
+
+✂️ ΤΟΜΕΣ & ΣΤΑΘΜΕΣ
+• AUTOSEC + SECMARK (ULTRA €14) — Αυτόματη 2D αρχιτεκτονική τομή: τοίχοι, πλάκες, κουφώματα, σύμβολα. Pure AutoLISP, Mac/Win/BricsCAD.
+• TOMH + TOMHGAP (€5) — Σύμβολα τομής σε κάτοψη (κύκλος, ημικύκλιο, τετράγωνο, δίχαλο + TOMHGAP για gaps).
+• STATH (€5) — Σύμβολα στάθμης: ορίζεις σημείο ±0.00, κάνεις click σε κάθε στάθμη, βγάζει ±Χ.ΧΧ με σύμβολο. Εντολές: STATH, SETZERO.
+
+📏 ΔΙΑΣΤΑΣΙΟΛΟΓΗΣΗ
+• ACD (€4) — Αυτόματες συνεχείς dimensions κατά μήκος τοίχων/αντικειμένων.
+• PRODIM (€3) — 1-click διαστασιολόγηση όλων των πλευρών polyline.
+• AutoDPL / DPLA (€3) — Διαστασιολόγηση polyline με δυνατότητα εσωτερικής/εξωτερικής τοποθέτησης.
+
+🔩 ΜΕΤΑΛΛΙΚΕΣ ΔΙΑΤΟΜΕΣ
+• STEELSEC (PREMIUM €9.90) — DCL dialog: επιλέγεις τύπο (IPE/HEA/HEB/UPN/L ίσα-άνισα/RHS/SHS/CHS/Flat Bar) και size → τοποθετείς στο σχέδιο. EN standard tables, αυτόματο hatching, Ix/Iy/βάρος. Compatible: AutoCAD Mac/Win, BricsCAD, progeCAD, ZWCAD.
+
+🗺 ΚΤΗΜΑΤΟΛΟΓΙΟ
+• KATGEO (PREMIUM €29.90) — Εργαλεία για Διαγράμματα Γεωμετρικών Μεταβολών: KATLAY (layers), KATCUT (τεμαχισμός), KATJOIN (ένωση), KATCHECK (έλεγχος), KATTAB (εξαγωγή CSV). Shoelace εμβαδά, EGSA '87. Ιδανικό για τοπογράφους.
+
+🎨 HATCH & WIPEOUT
+• HFL (€4) — Hatch From Lines: επιλέγεις γραμμές/τόξα → αυτόματο κλειστό boundary + hatch.
+• HATCHLINE/HL (€4) — Hatched band κατά μήκος polyline (σαν τοίχος με hatch). Mac/Win, AutoCAD 2020-2025+.
+• Wipeout Suite (PREMIUM €5): PWIPE (πολυγωνικό), EWIPE (ελλειπτικό), CWIPE (από υπάρχον object circle/ellipse/polyline).
+
+📝 ΚΕΙΜΕΝΟ & ΑΛΦΑΡΙΘΜΗΤΙΚΑ
+• TBOX (€3) — Προσθέτει πλαίσιο (rectangle/circle/polygon) γύρω από επιλεγμένα text/mtext.
+• Text Master/TSET (€3) — Batch επεξεργασία text: αλλάζεις περιεχόμενο, ύψος, χρώμα σε πολλά texts ταυτόχρονα.
+• STNUM2 (€5) — Auto-Sequencing: click σε σημεία → αυτόματη αρίθμηση ή γράμματα με κύκλο/τετράγωνο/χωρίς.
+
+⚡ ΗΛΕΚΤΡΟΛΟΓΙΚΑ
+• ElecDraw (€6) — EL1/EL2/EL3/EL3NP/ELDRAW: ηλεκτρολογικές γραμμές φάσεων (IEC standard), auto layers ανά φάση.
+
+🔧 UTILITIES
+• MSCALE (€3) — Multi-Object Scaling: scale πολλαπλών objects από custom center point.
+• TotalLen (€3) — Συνολικό μήκος επιλεγμένων lines/polylines (εμφανίζει σε alert).
+• Auto-Connect Circles (€3) — pscircle: συνδέει επιλεγμένους κύκλους σε polyline ή spline (ταξινόμηση κατά γωνία).
+• ExtendBreak/EXB (€3) — Extend γραμμή σε boundary + auto-break σε κάθε εμπόδιο (line/circle/arc/polyline). Mac/Win.
+• CT/Trim Fix (€4) — Clean Tails: αυτόματος καθαρισμός γωνιών/ελεύθερων άκρων γραμμών.
+• Auto-Area Labeler (€3) — Click μέσα σε χώρο → αυτόματο A=Χ.ΧΧ m² και P=Υ.ΥΥ m.
+
+📦 BUNDLES
+• Floor Plan Suite (ULTRA €17): EXWALL + INWALL + DCDOOR + DCWIN
+• Wall Suite (€6.50): EXWALL + INWALL
+• Staircase Bundle (€8): STPLAN + STPLAN_FLEX + STCIRC_ + USTAIR
+• Roof Generator Suite (€8): STEGI-2PT + STEGI-3R + STEGI-MONO + TETR-2PT
+• Starter Pack 11-in-1 (€11): 11 essential tools μαζί
+• Express Tools for Mac (€11): 11 LISPs που αντικαθιστούν τα Express Tools στο AutoCAD Mac R24+
+
+━━━ ΤΡΟΠΟΙ ΑΓΟΡΑΣ ━━━
+
+1️⃣ ΕΦΑΠΑΞ ΑΓΟΡΑ — patreon.com/deli_cad/shop
+   Αγοράζεις ένα συγκεκριμένο tool μία φορά, το έχεις για πάντα.
+
+2️⃣ MEMBERSHIP (ΣΥΝΔΡΟΜΗ) — patreon.com/delicad
+   Μηνιαία συνδρομή: έχεις πρόσβαση σε όλα τα tools που ανεβαίνουν + αναβαθμίσεις.
+
+   • Basic CAD Tools — €5.90/μήνα
+     Όλα τα Basic LISP tools, AutoCAD Only (Win/Mac), Discord access, οδηγοί εγκατάστασης.
+
+   • Premium & Compatibility — €19.90/μήνα (limited spots)
+     Όλα του Tier 1 + Premium LISP (πιο σύνθετα tools) + 2 μετατροπές LISP/μήνα για άλλο CAD (BricsCAD, ZWCAD κλπ) + Early Access σε νέα tools + Discord support.
+
+   • ULTRA SUITE & CUSTOM LISP — €99.90/μήνα (limited spots)
+     Όλα Tier 1 & 2 + Ultra LISP tools + 1 Custom LISP/μήνα (σχεδιάζω ένα εξατομικευμένο script ακριβώς για τις ανάγκες σου) + απεριόριστες μετατροπές για συμβατότητα + VIP προτεραιότητα υποστήριξης.
+
+   Ποιο ταιριάζει:
+   - Θέλεις μόνο 1-2 tools → εφάπαξ αγορά από το shop
+   - Θέλεις όλα τα basic tools + updates → Basic €5.90/μήνα
+   - Δουλεύεις και σε BricsCAD/ZWCAD ή θέλεις premium tools → Premium €19.90/μήνα
+   - Επαγγελματικό γραφείο που θέλει custom εργαλεία → Ultra €99.90/μήνα
+
+   Για να γίνει κάποιος μέλος: https://www.patreon.com/15351918/join
+
+TIER ΑΝΑ TOOL — ΣΗΜΑΝΤΙΚΟ:
+Κάθε tool στο shop έχει στον τίτλο "Basic", "Premium" ή "Ultra" που δείχνει σε ποιο membership ανήκει:
+- "Basic ..." → διαθέσιμο από Basic tier (€5.90/μήνα) και πάνω
+- "Premium ..." → διαθέσιμο από Premium tier (€19.90/μήνα) και πάνω
+- "Ultra ..." → μόνο Ultra tier (€99.90/μήνα) ή εφάπαξ αγορά
+Αν ρωτήσουν "σε ποιο πακέτο ανήκει το X", κοίτα τον τίτλο του tool και απάντησε ανάλογα.
+
+Μην δίνεις ακριβείς τιμές αν δεν είσαι σίγουρος — παρέπεμπε στο patreon.com/deli_cad.
+
+━━━ ΥΠΗΡΕΣΙΕΣ ━━━
+
+Υπάρχουν 3 τρόποι συνεργασίας:
+
+1. ΑΓΟΡΑ ΕΤΟΙΜΟΥ LISP
+   Έτοιμα tools από το shop ή μέσω membership.
+   → patreon.com/deli_cad/shop
+
+2. ΔΙΟΡΘΩΣΗ / ΜΕΤΑΤΡΟΠΗ ΥΠΑΡΧΟΝΤΟΣ LISP
+   Αν ο χρήστης έχει δικό του LISP που δεν δουλεύει ή θέλει να τρέχει σε άλλο CAD (BricsCAD, ZWCAD, progeCAD κλπ).
+   → andreasdelitzakis@gmail.com
+
+3. ΔΗΜΙΟΥΡΓΙΑ LISP ΑΠΟ ΤΗΝ ΑΡΧΗ
+   Αν θέλει κάτι εξατομικευμένο που δεν υπάρχει στο shop.
+   → Μήνυμα στο Patreon: patreon.com/delicad
+
+Όταν ο χρήστης ρωτάει για κάτι που δεν υπάρχει στα έτοιμα tools, κατανόησε τι ακριβώς χρειάζεται και παρέπεμψε στη σωστή από τις 3 υπηρεσίες παραπάνω.
+
+━━━ COMPATIBILITY ━━━
+Κύρια πλατφόρμα: AutoCAD Mac & Windows (pure AutoLISP, χωρίς ActiveX)
+STEELSEC επίσης: BricsCAD, progeCAD, ZWCAD
+AUTOSEC: Mac/Win/BricsCAD
+Τα υπόλοιπα: κυρίως AutoCAD Mac/Win — αμφιβολία → "Επικοινώνησε με τον Andreas"
+
+━━━ ΟΔΗΓΙΕΣ ━━━
+• Απάντα ΠΑΝΤΑ στα ελληνικά εκτός αν ο χρήστης γράψει αγγλικά
+• Σύντομες απαντήσεις (2-4 προτάσεις) — αναλυτικά μόνο αν ζητηθεί
+• Αν δεν ξέρεις κάτι: "Επικοινώνησε απευθείας με τον Andreas: info@delicad.gr"
+• Φιλικό, επαγγελματικό ύφος — χωρίς επιθετική πώληση`;
+
+const CHIPS = [
+  "Ποιο tool για σκάλες;",
+  "Τι κάνει το AUTOSEC;",
+  "Δουλεύει στο BricsCAD;",
+  "Πώς αγοράζω ένα tool;",
+  "Έχω AutoCAD Mac — ποια tools δουλεύουν;",
+];
+
+const ICON_SM = `<svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+  <line x1="5.5" y1="1" x2="5.5" y2="10" stroke="#3C9DE0" stroke-width="1" opacity=".65"/>
+  <line x1="1" y1="5.5" x2="10" y2="5.5" stroke="#3C9DE0" stroke-width="1" opacity=".65"/>
+  <circle cx="5.5" cy="5.5" r="2" stroke="#3C9DE0" stroke-width="1.1" fill="none"/>
+</svg>`;
+
+let messages = [];
+const msgEl = document.getElementById('messages');
+const inp = document.getElementById('inp');
+const btn = document.getElementById('btn');
+let loading = false;
+
+function avatar(isBot) {
+  if (!isBot) return '';
+  return `<div class="avatar">${ICON_SM}</div>`;
+}
+
+function addMessage(role, content) {
+  messages.push({ role, content });
+  const row = document.createElement('div');
+  row.className = 'row ' + (role === 'user' ? 'user' : 'bot');
+  row.innerHTML = avatar(role === 'assistant') +
+    `<div class="bubble">${content.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`;
+  msgEl.appendChild(row);
+  msgEl.scrollTop = msgEl.scrollHeight;
+  return row;
+}
+
+function showLoading() {
+  const row = document.createElement('div');
+  row.className = 'row bot';
+  row.id = 'loading-row';
+  row.innerHTML = avatar(true) +
+    `<div class="bubble"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
+  msgEl.appendChild(row);
+  msgEl.scrollTop = msgEl.scrollHeight;
+}
+
+function hideLoading() {
+  const r = document.getElementById('loading-row');
+  if (r) r.remove();
+}
+
+function showChips() {
+  const el = document.createElement('div');
+  el.className = 'chips';
+  el.id = 'chips';
+  CHIPS.forEach(q => {
+    const b = document.createElement('button');
+    b.className = 'chip';
+    b.textContent = q;
+    b.onclick = () => { el.remove(); send(q); };
+    el.appendChild(b);
+  });
+  msgEl.appendChild(el);
+  msgEl.scrollTop = msgEl.scrollHeight;
+}
+
+async function send(text) {
+  const content = (text || inp.value).trim();
+  if (!content || loading) return;
+  const chips = document.getElementById('chips');
+  if (chips) chips.remove();
+  inp.value = '';
+  inp.style.height = '44px';
+  loading = true;
+  btn.disabled = true;
+  addMessage('user', content);
+  showLoading();
+
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json',
+        'x-api-key': 'ΒΑΛΕ_ΕΔΩ_ΤΟ_API_KEY',
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        system: SYSTEM_PROMPT,
+        messages
+      })
+    });
+    const d = await r.json();
+    hideLoading();
+    const reply = d.content?.map(b => b.text || '').join('') || 'Κάτι πήγε στραβά. Δοκίμασε ξανά.';
+    addMessage('assistant', reply);
+  } catch {
+    hideLoading();
+    addMessage('assistant', 'Πρόβλημα σύνδεσης. Δοκίμασε ξανά ή γράψε στο info@delicad.gr');
+  }
+
+  loading = false;
+  btn.disabled = !inp.value.trim();
+}
+
+// Init
+addMessage('assistant', 'Γεια! Είμαι ο DeliCAD Assistant.\nΡώτησέ με για οποιοδήποτε tool — τι κάνει, αν δουλεύει στην πλατφόρμα σου, ή ποιο ταιριάζει στις ανάγκες σου.');
+showChips();
+
+// Input handlers
+inp.addEventListener('input', () => {
+  btn.disabled = !inp.value.trim() || loading;
+  inp.style.height = '44px';
+  inp.style.height = Math.min(inp.scrollHeight, 120) + 'px';
+});
+inp.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+});
+btn.addEventListener('click', () => send());
+</script>
+</body>
+</html>
